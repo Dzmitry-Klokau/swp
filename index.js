@@ -61,13 +61,16 @@ window.addEventListener(
     const frame = document.getElementById("swpFrame");
     const src = `https://dzmitry-klokau.github.io/swp?url=${
       data.url
-    }&randomValue=${Math.floor(Math.random() * 1001)}`;
+    }&noCache=${Date.now()}`;
     frame.src = src;
     frame.style.display = "block";
     frame.onload = function () {
       logToParent({
         msg: "frame onload!",
         level: "debug",
+      });
+      sendToParentWindow("swp-status", {
+        status: "frame-onload",
       });
     };
 
