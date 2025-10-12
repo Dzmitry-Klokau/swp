@@ -66,7 +66,7 @@ window.addEventListener(
     frame.style.display = "block";
     frame.onload = function () {
       logToParent({
-        msg: "frame onload",
+        msg: "frame onload!",
         level: "debug",
       });
     };
