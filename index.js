@@ -45,6 +45,11 @@ if ("serviceWorker" in navigator) {
 }
 
 function setFrameSrc(url) {
+  logToParent({
+    msg: `Try to set new iframe url is ${url}`,
+    level: "debug",
+  });
+
   const frame = document.getElementById("swpFrame");
   const src = `https://dzmitry-klokau.github.io/swp?url=${url}&noCache=${Date.now()}`;
   frame.src = src;
