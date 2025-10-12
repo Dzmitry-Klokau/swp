@@ -103,22 +103,20 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
   }
 });
 
-if ("PerformanceObserver" in window) {
+setInterval(() => {
+  var performance =
+    window.performance ||
+    window.mozPerformance ||
+    window.msPerformance ||
+    window.webkitPerformance ||
+    {};
+  var network = performance.getEntries() || {};
+  const m3u8Files = network
+    .filter((e) => e.name.includes("m3u8"))
+    .map((e) => ({ name: e.name, contentType: e.contentType }));
   logToParent({
-    msg: "Add PerformanceObserver",
+    msg: `m3u8Files: ${m3u8Files.length}`,
     level: "debug",
   });
-  try {
-    const po = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry) => {
-        logToParent({
-          msg: `perf resource: ${entry.name}`,
-          level: "debug",
-        });
-      });
-    });
-    po.observe({ entryTypes: ["resource"] });
-  } catch (e) {
-    console.warn("PerformanceObserver failed", e);
-  }
-}
+  console.log({ m3u8Files });
+}, 1000);
