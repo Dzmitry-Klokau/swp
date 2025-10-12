@@ -89,6 +89,10 @@ window.addEventListener(
   (event) => {
     const data = event.data;
 
+    logToParent({
+      msg: `New message: ${JSON.stringify(data)}`,
+      level: "debug",
+    });
     try {
       if (data.type === "swp-new-src" && data.url === "string") {
         setFrameSrc(data.url);
