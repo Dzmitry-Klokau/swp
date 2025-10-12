@@ -44,6 +44,46 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+function setFrameSrc(url) {
+  const frame = document.getElementById("swpFrame");
+  const src = `https://dzmitry-klokau.github.io/swp?url=${url}&noCache=${Date.now()}`;
+  frame.src = src;
+  frame.style.display = "block";
+  frame.onload = function () {
+    logToParent({
+      msg: "frame onload!",
+      level: "debug",
+    });
+    sendToParentWindow("swp-status", {
+      status: "frame-onload",
+    });
+  };
+
+  logToParent({
+    msg: `New iframe url is ${src}`,
+    level: "debug",
+  });
+}
+
+function getNetworkResources() {
+  const iframe = document.getElementById("swpFrame");
+  try {
+    const resourceNames = iframe.contentWindow.performance
+      .getEntriesByType("resource")
+      .map((e) => e.name);
+
+    sendToParentWindow(
+      "swp-network-resources-response",
+      JSON.stringify(resourceNames)
+    );
+  } catch (err) {
+    logToParent({
+      msg: `perf err ${err}`,
+      level: "error",
+    });
+  }
+}
+
 window.addEventListener(
   "message",
   (event) => {
@@ -52,32 +92,12 @@ window.addEventListener(
     if (typeof data !== "object") {
       return;
     }
-    if (data.type !== "setSrc") {
-      return;
+    if (data.type === "swp-new-src" && data.url === "string") {
+      setFrameSrc(data.url);
     }
-    if (typeof data.url !== "string") {
-      return;
+    if (data.type === "swp-network-resources-request") {
+      getNetworkResources();
     }
-    const frame = document.getElementById("swpFrame");
-    const src = `https://dzmitry-klokau.github.io/swp?url=${
-      data.url
-    }&noCache=${Date.now()}`;
-    frame.src = src;
-    frame.style.display = "block";
-    frame.onload = function () {
-      logToParent({
-        msg: "frame onload!",
-        level: "debug",
-      });
-      sendToParentWindow("swp-status", {
-        status: "frame-onload",
-      });
-    };
-
-    logToParent({
-      msg: `New iframe url is ${src}`,
-      level: "debug",
-    });
   },
   false
 );
@@ -102,22 +122,3 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
     sendToParentWindow("log", data.payload);
   }
 });
-
-setInterval(() => {
-  const iframe = document.getElementById("swpFrame");
-  try {
-    const entries =
-      iframe.contentWindow.performance.getEntriesByType("resource");
-    for (const entry of entries) {
-      logToParent({
-        msg: `iframe resource ${entry.name}`,
-        level: "debug",
-      });
-    }
-  } catch (err) {
-    logToParent({
-      msg: `perf err ${err}`,
-      level: "error",
-    });
-  }
-}, 3000);
