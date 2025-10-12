@@ -88,10 +88,11 @@ window.addEventListener(
   "message",
   (event) => {
     const data = event.data;
+    logToParent({
+      msg: `!!!!`,
+      level: "debug",
+    });
 
-    if (typeof data !== "object") {
-      return;
-    }
     if (data.type === "swp-new-src" && data.url === "string") {
       setFrameSrc(data.url);
     }
