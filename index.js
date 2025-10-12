@@ -45,11 +45,6 @@ if ("serviceWorker" in navigator) {
 }
 
 function setFrameSrc(url) {
-  logToParent({
-    msg: `Try to set new iframe url is ${url}`,
-    level: "debug",
-  });
-
   const frame = document.getElementById("swpFrame");
   const src = `https://dzmitry-klokau.github.io/swp?url=${url}&noCache=${Date.now()}`;
   frame.src = src;
@@ -94,12 +89,8 @@ window.addEventListener(
   (event) => {
     const data = event.data;
 
-    logToParent({
-      msg: `New message: ${JSON.stringify(data)}`,
-      level: "debug",
-    });
     try {
-      if (data.type === "swp-new-src" && data.url === "string") {
+      if (data.type === "swp-new-src" && typeof data.url === "string") {
         setFrameSrc(data.url);
       }
       if (data.type === "swp-network-resources-request") {
