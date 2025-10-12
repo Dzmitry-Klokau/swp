@@ -65,7 +65,7 @@ function setFrameSrc(url) {
   });
 }
 
-function getNetworkResources() {
+function getNetworkResourceNames() {
   const iframe = document.getElementById("swpFrame");
   try {
     const resourceNames = iframe.contentWindow.performance
@@ -73,7 +73,7 @@ function getNetworkResources() {
       .map((e) => e.name);
 
     sendToParentWindow(
-      "swp-network-resources-response",
+      "swp-network-resource-names-response",
       JSON.stringify(resourceNames)
     );
   } catch (err) {
@@ -93,7 +93,7 @@ window.addEventListener(
       if (data.type === "swp-new-src" && typeof data.url === "string") {
         setFrameSrc(data.url);
       }
-      if (data.type === "swp-network-resources-request") {
+      if (data.type === "swp-network-resource-names-request") {
         getNetworkResources();
       }
     } catch (err) {
