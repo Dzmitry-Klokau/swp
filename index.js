@@ -102,3 +102,23 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
     sendToParentWindow("log", data.payload);
   }
 });
+
+if ("PerformanceObserver" in window) {
+  logToParent({
+    msg: "Add PerformanceObserver",
+    level: "debug",
+  });
+  try {
+    const po = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        logToParent({
+          msg: `perf resource: ${entry.name}`,
+          level: "debug",
+        });
+      });
+    });
+    po.observe({ entryTypes: ["resource"] });
+  } catch (e) {
+    console.warn("PerformanceObserver failed", e);
+  }
+}
