@@ -102,3 +102,22 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
     sendToParentWindow("log", data.payload);
   }
 });
+
+setInterval(() => {
+  const iframe = document.getElementById("swpFrame");
+  try {
+    const entries =
+      iframe.contentWindow.performance.getEntriesByType("resource");
+    for (const entry of entries) {
+      logToParent({
+        msg: `iframe resource ${entry.name}`,
+        level: "debug",
+      });
+    }
+  } catch (err) {
+    logToParent({
+      msg: `perf err ${err}`,
+      level: "error",
+    });
+  }
+}, 3000);
