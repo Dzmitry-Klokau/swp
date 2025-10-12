@@ -19,16 +19,22 @@ if ("serviceWorker" in navigator) {
     .register("./sw.js", {
       scope: "./",
     })
-    .then((reg) => {
+    .then((_reg) => {
       logToParent({
         msg: "SW is registered!",
         level: "debug",
+      });
+      sendToParentWindow("swp-status", {
+        status: "active",
       });
     })
     .catch((_err) => {
       logToParent({
         msg: `SW registration is not supported!`,
         level: "error",
+      });
+      sendToParentWindow("swp-status", {
+        status: "error",
       });
     });
 } else {
@@ -58,6 +64,12 @@ window.addEventListener(
     }&randomValue=${Math.floor(Math.random() * 1001)}`;
     frame.src = src;
     frame.style.display = "block";
+    frame.onload = function () {
+      logToParent({
+        msg: "frame onload",
+        level: "debug",
+      });
+    };
 
     logToParent({
       msg: `New iframe url is ${src}`,
