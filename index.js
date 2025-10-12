@@ -94,7 +94,7 @@ window.addEventListener(
         setFrameSrc(data.url);
       }
       if (data.type === "swp-network-resource-names-request") {
-        getNetworkResources();
+        getNetworkResourceNames();
       }
     } catch (err) {
       logToParent({
