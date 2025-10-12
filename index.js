@@ -102,21 +102,3 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
     sendToParentWindow("log", data.payload);
   }
 });
-
-setInterval(() => {
-  var performance =
-    window.performance ||
-    window.mozPerformance ||
-    window.msPerformance ||
-    window.webkitPerformance ||
-    {};
-  var network = performance.getEntries() || {};
-  const m3u8Files = network
-    .filter((e) => e.name.includes("m3u8"))
-    .map((e) => ({ name: e.name, contentType: e.contentType }));
-  logToParent({
-    msg: `m3u8Files: ${m3u8Files.length}`,
-    level: "debug",
-  });
-  console.log({ m3u8Files });
-}, 1000);
