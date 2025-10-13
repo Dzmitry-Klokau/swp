@@ -99,6 +99,10 @@ window.addEventListener(
       }
       if (data.type === "swp-network-resource-names") {
         const port = event.ports && event.ports[0];
+        logToParent({
+          msg: `swp-network-resource-names`,
+          level: "debug",
+        });
         sendNetworkResourceNamesToParentWindow(port);
       }
     } catch (err) {
