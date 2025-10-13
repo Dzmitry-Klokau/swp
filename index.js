@@ -8,17 +8,19 @@ function setLocalStorageValues(port, localStorageValues) {
   port.postMessage(localStorage.length);
 }
 
-function setFrameSrc(port, url) {
+function setIFrameSrc(port, url) {
   const frame = document.getElementById("swpFrame");
   const src = `https://dzmitry-klokau.github.io/swp?url=${url}&noCache=${Date.now()}`;
   frame.src = src;
   frame.style.display = "block";
   frame.onload = function () {
-    port.postMessage("frame-onload");
-    logToParent({
-      msg: "frame onload!",
-      level: "debug",
-    });
+    setTimeout(() => {
+      logToParent({
+        msg: "frame onload!",
+        level: "debug",
+      });
+      port.postMessage("frame-onload");
+    }, 100);
   };
 
   logToParent({
@@ -27,7 +29,7 @@ function setFrameSrc(port, url) {
   });
 }
 
-function sendNetworkResourceNamesToParentWindow(port) {
+function sendNetworkResourceNames(port) {
   const iframe = document.getElementById("swpFrame");
   try {
     const resourceNames = iframe.contentWindow.performance
@@ -35,6 +37,28 @@ function sendNetworkResourceNamesToParentWindow(port) {
       .map((e) => e.name);
 
     port.postMessage(JSON.stringify(resourceNames));
+  } catch (err) {
+    logToParent({
+      msg: `Error during sending network resource names. ${err}`,
+      level: "error",
+    });
+  } finally {
+    port.close();
+  }
+}
+
+function sendNetworkResourceByName(port, name) {
+  const iframe = document.getElementById("swpFrame");
+  try {
+    const resources = iframe.contentWindow.performance
+      .getEntriesByType("resource")
+      .filter((e) => e.name === name);
+
+    if (resources.length > 0) {
+      port.postMessage(JSON.stringify(resources[resources.length - 1]));
+    } else {
+      port.postMessage(JSON.stringify(null));
+    }
   } catch (err) {
     logToParent({
       msg: `Error during sending network resource names. ${err}`,
@@ -53,10 +77,16 @@ window.addEventListener(
 
     try {
       if (data.type === "swp-new-src" && typeof data.payload === "string") {
-        setFrameSrc(port, data.payload);
+        setIFrameSrc(port, data.payload);
       }
       if (data.type === "swp-network-resource-names") {
-        sendNetworkResourceNamesToParentWindow(port);
+        sendNetworkResourceNames(port);
+      }
+      if (
+        data.type === "swp-network-resource-by-name" &&
+        typeof data.payload === "string"
+      ) {
+        sendNetworkResourceByName(port, data.payload);
       }
       if (data.type === "swp-ls-set" && typeof data.payload === "string") {
         const payloadObj = JSON.parse(data.payload);
