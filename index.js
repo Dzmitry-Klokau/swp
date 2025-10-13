@@ -1,18 +1,4 @@
-function sendToParentWindow(type, payload) {
-  window.parent.postMessage(
-    {
-      type,
-      payload,
-    },
-    "*"
-  );
-}
-function logToParent({ msg, level }) {
-  sendToParentWindow("log", {
-    msg: `[iframe] ${msg}`,
-    level,
-  });
-}
+const { sendMsgToParentWindow, logToParent } = require("./parent");
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker
@@ -24,7 +10,7 @@ if ("serviceWorker" in navigator) {
         msg: "SW is registered!",
         level: "debug",
       });
-      sendToParentWindow("swp-status", {
+      sendMsgToParentWindow("swp-status", {
         status: "active",
       });
     })
@@ -33,7 +19,7 @@ if ("serviceWorker" in navigator) {
         msg: `SW registration is not supported!`,
         level: "error",
       });
-      sendToParentWindow("swp-status", {
+      sendMsgToParentWindow("swp-status", {
         status: "error",
       });
     });
@@ -54,7 +40,7 @@ function setFrameSrc(url) {
       msg: "frame onload!",
       level: "debug",
     });
-    sendToParentWindow("swp-status", {
+    sendMsgToParentWindow("swp-status", {
       status: "frame-onload",
     });
   };
@@ -73,11 +59,6 @@ function sendNetworkResourceNamesToParentWindow(port) {
       .map((e) => e.name);
 
     port.postMessage(JSON.stringify(resourceNames));
-
-    // sendToParentWindow(
-    //   "swp-network-resource-names-response",
-    //   JSON.stringify(resourceNames)
-    // );
   } catch (err) {
     logToParent({
       msg: `Error during sending network resource names. ${err}`,
@@ -122,7 +103,7 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
   if (data.type === "swp-request") {
     const url = data.url;
 
-    sendToParentWindow("swp-request", url);
+    sendMsgToParentWindow("swp-request", url);
 
     window.addEventListener("message", function handler(e) {
       if (e.data.type === "swp-response" && e.data.url === url) {
@@ -132,6 +113,6 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
     });
   }
   if (data.type === "log") {
-    sendToParentWindow("log", data.payload);
+    sendMsgToParentWindow("log", data.payload);
   }
 });
