@@ -65,22 +65,26 @@ function setFrameSrc(url) {
   });
 }
 
-function getNetworkResourceNames() {
+function sendNetworkResourceNamesToParentWindow(port) {
   const iframe = document.getElementById("swpFrame");
   try {
     const resourceNames = iframe.contentWindow.performance
       .getEntriesByType("resource")
       .map((e) => e.name);
 
-    sendToParentWindow(
-      "swp-network-resource-names-response",
-      JSON.stringify(resourceNames)
-    );
+    port.postMessage(JSON.stringify(resourceNames));
+
+    // sendToParentWindow(
+    //   "swp-network-resource-names-response",
+    //   JSON.stringify(resourceNames)
+    // );
   } catch (err) {
     logToParent({
-      msg: `perf err ${err}`,
+      msg: `Error during sending network resource names. ${err}`,
       level: "error",
     });
+  } finally {
+    port.close();
   }
 }
 
@@ -93,8 +97,9 @@ window.addEventListener(
       if (data.type === "swp-new-src" && typeof data.url === "string") {
         setFrameSrc(data.url);
       }
-      if (data.type === "swp-network-resource-names-request") {
-        getNetworkResourceNames();
+      if (data.type === "swp-network-resource-names") {
+        const port = event.ports && event.ports[0];
+        sendNetworkResourceNamesToParentWindow(port);
       }
     } catch (err) {
       logToParent({
