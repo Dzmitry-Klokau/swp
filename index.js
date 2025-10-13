@@ -47,21 +47,13 @@ function sendNetworkResourceNames(port) {
   }
 }
 
-function sendNetworkNavigationByName(port, name) {
+function sendIFrameContent(port) {
   const iframe = document.getElementById("swpFrame");
   try {
-    const navigations = iframe.contentWindow.performance
-      .getEntriesByType("navigation")
-      .filter((e) => e.name === name);
-
-    if (navigations.length > 0) {
-      port.postMessage(JSON.stringify(navigations[navigations.length - 1]));
-    } else {
-      port.postMessage(JSON.stringify(navigations));
-    }
+    port.postMessage(iframe.contentDocument.documentElement.outerHTML);
   } catch (err) {
     logToParent({
-      msg: `Error during sending network resource names. ${err}`,
+      msg: `Error during sending iframe content. ${err}`,
       level: "error",
     });
   } finally {
@@ -76,17 +68,14 @@ window.addEventListener(
     const data = event.data;
 
     try {
-      if (data.type === "swp-new-src" && typeof data.payload === "string") {
+      if (data.type === "swp-iframe-src" && typeof data.payload === "string") {
         setIFrameSrc(port, data.payload);
       }
       if (data.type === "swp-network-resource-names") {
         sendNetworkResourceNames(port);
       }
-      if (
-        data.type === "swp-network-navigation-by-name" &&
-        typeof data.payload === "string"
-      ) {
-        sendNetworkNavigationByName(port, data.payload);
+      if (data.type === "swp-iframe-content") {
+        sendIFrameContent(port);
       }
       if (data.type === "swp-ls-set" && typeof data.payload === "string") {
         const payloadObj = JSON.parse(data.payload);
