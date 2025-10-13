@@ -1,6 +1,6 @@
 import { logToParent } from "./parent.js";
 
-function setLocalStorageValues(localStorageValues) {
+function setLocalStorageValues(port, localStorageValues) {
   Object.entries(localStorageValues).forEach(([k, v]) => {
     localStorage.setItem(k, v);
   });
@@ -56,10 +56,6 @@ window.addEventListener(
         setFrameSrc(port, data.payload);
       }
       if (data.type === "swp-network-resource-names") {
-        logToParent({
-          msg: `swp-network-resource-names`,
-          level: "debug",
-        });
         sendNetworkResourceNamesToParentWindow(port);
       }
       if (data.type === "swp-ls-set" && typeof data.payload === "string") {
