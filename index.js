@@ -8,7 +8,7 @@ function setLocalStorageValues(port, localStorageValues) {
   port.postMessage(localStorage.length);
 }
 
-function setFrameSrc(url) {
+function setFrameSrc(port, url) {
   const frame = document.getElementById("swpFrame");
   const src = `https://dzmitry-klokau.github.io/swp?url=${url}&noCache=${Date.now()}`;
   frame.src = src;
