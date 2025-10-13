@@ -1,33 +1,11 @@
-import { sendMsgToParentWindow, logToParent } from "./parent.js";
+import { logToParent } from "./parent.js";
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("./sw.js", {
-      scope: "./",
-    })
-    .then((_reg) => {
-      logToParent({
-        msg: "SW is registered!",
-        level: "debug",
-      });
-      sendMsgToParentWindow("swp-status", {
-        status: "active",
-      });
-    })
-    .catch((_err) => {
-      logToParent({
-        msg: `SW registration is not supported!`,
-        level: "error",
-      });
-      sendMsgToParentWindow("swp-status", {
-        status: "error",
-      });
-    });
-} else {
-  logToParent({
-    msg: `SW is not registered. Error: ${err}.`,
-    level: "error",
+function setLocalStorageValues(localStorageValues) {
+  Object.entries(localStorageValues).forEach(([k, v]) => {
+    localStorage.setItem(k, v);
   });
+
+  port.postMessage(localStorage.length);
 }
 
 function setFrameSrc(url) {
@@ -36,12 +14,10 @@ function setFrameSrc(url) {
   frame.src = src;
   frame.style.display = "block";
   frame.onload = function () {
+    port.postMessage("frame-onload");
     logToParent({
       msg: "frame onload!",
       level: "debug",
-    });
-    sendMsgToParentWindow("swp-status", {
-      status: "frame-onload",
     });
   };
 
@@ -72,19 +48,23 @@ function sendNetworkResourceNamesToParentWindow(port) {
 window.addEventListener(
   "message",
   (event) => {
+    const port = event.ports && event.ports[0];
     const data = event.data;
 
     try {
-      if (data.type === "swp-new-src" && typeof data.url === "string") {
-        setFrameSrc(data.url);
+      if (data.type === "swp-new-src" && typeof data.payload === "string") {
+        setFrameSrc(port, data.payload);
       }
       if (data.type === "swp-network-resource-names") {
-        const port = event.ports && event.ports[0];
         logToParent({
           msg: `swp-network-resource-names`,
           level: "debug",
         });
         sendNetworkResourceNamesToParentWindow(port);
+      }
+      if (data.type === "swp-ls-set" && typeof data.payload === "string") {
+        const payloadObj = JSON.parse(data.payload);
+        setLocalStorageValues(port, payloadObj);
       }
     } catch (err) {
       logToParent({
@@ -95,24 +75,3 @@ window.addEventListener(
   },
   false
 );
-
-navigator.serviceWorker.addEventListener("message", async (event) => {
-  const port = event.ports[0];
-  const data = event.data;
-
-  if (data.type === "swp-request") {
-    const url = data.url;
-
-    sendMsgToParentWindow("swp-request", url);
-
-    window.addEventListener("message", function handler(e) {
-      if (e.data.type === "swp-response" && e.data.url === url) {
-        port.postMessage(e.data.response);
-        window.removeEventListener("message", handler);
-      }
-    });
-  }
-  if (data.type === "log") {
-    sendMsgToParentWindow("log", data.payload);
-  }
-});
