@@ -47,15 +47,15 @@ function sendNetworkResourceNames(port) {
   }
 }
 
-function sendNetworkResourceByName(port, name) {
+function sendNetworkNavigationByName(port, name) {
   const iframe = document.getElementById("swpFrame");
   try {
-    const resources = iframe.contentWindow.performance
-      .getEntriesByType("resource")
+    const nvaigations = iframe.contentWindow.performance
+      .getEntriesByType("navigation")
       .filter((e) => e.name === name);
 
-    if (resources.length > 0) {
-      port.postMessage(JSON.stringify(resources[resources.length - 1]));
+    if (nvaigations.length > 0) {
+      port.postMessage(JSON.stringify(nvaigations[nvaigations.length - 1]));
     } else {
       port.postMessage(JSON.stringify(null));
     }
@@ -83,10 +83,10 @@ window.addEventListener(
         sendNetworkResourceNames(port);
       }
       if (
-        data.type === "swp-network-resource-by-name" &&
+        data.type === "swp-network-navigation-by-name" &&
         typeof data.payload === "string"
       ) {
-        sendNetworkResourceByName(port, data.payload);
+        sendNetworkNavigationByName(port, data.payload);
       }
       if (data.type === "swp-ls-set" && typeof data.payload === "string") {
         const payloadObj = JSON.parse(data.payload);
