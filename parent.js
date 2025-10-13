@@ -1,4 +1,4 @@
-function sendMsgToParentWindow(type, payload) {
+export function sendMsgToParentWindow(type, payload) {
   window.parent.postMessage(
     {
       type,
@@ -7,14 +7,10 @@ function sendMsgToParentWindow(type, payload) {
     "*"
   );
 }
-function logToParent({ msg, level }) {
+
+export function logToParent({ msg, level }) {
   sendMsgToParentWindow("log", {
     msg: `[iframe] ${msg}`,
     level,
   });
 }
-
-module.exports = {
-  sendMsgToParentWindow,
-  logToParent,
-};
