@@ -50,14 +50,14 @@ function sendNetworkResourceNames(port) {
 function sendNetworkNavigationByName(port, name) {
   const iframe = document.getElementById("swpFrame");
   try {
-    const nvaigations = iframe.contentWindow.performance
+    const navigations = iframe.contentWindow.performance
       .getEntriesByType("navigation")
       .filter((e) => e.name === name);
 
-    if (nvaigations.length > 0) {
-      port.postMessage(JSON.stringify(nvaigations[nvaigations.length - 1]));
+    if (navigations.length > 0) {
+      port.postMessage(JSON.stringify(navigations[navigations.length - 1]));
     } else {
-      port.postMessage(JSON.stringify(null));
+      port.postMessage(JSON.stringify(navigations));
     }
   } catch (err) {
     logToParent({
