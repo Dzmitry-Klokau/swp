@@ -1,4 +1,4 @@
-const { sendMsgToParentWindow, logToParent } = require("./parent");
+import { sendMsgToParentWindow, logToParent } from "./parent";
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker
