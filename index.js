@@ -1,4 +1,4 @@
-import { sendMsgToParentWindow, logToParent } from "./parent";
+import { sendMsgToParentWindow, logToParent } from "./parent.js";
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker
