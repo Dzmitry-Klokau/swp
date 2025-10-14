@@ -1,4 +1,4 @@
-import { logToParent } from "./parent.js";
+import { logToParent, sendMsgToParentWindow } from "./parent.js";
 
 function setLocalStorageValues(port, localStorageValues) {
   Object.entries(localStorageValues).forEach(([k, v]) => {
@@ -85,10 +85,7 @@ window.addEventListener(
         data.type === "swp-content-cookie" &&
         typeof data.payload === "string"
       ) {
-        logToParent({
-          msg: `swp-content-cookie ${data.payload}`,
-          level: "debug",
-        });
+        sendMsgToParentWindow(data.type, data.payload);
       }
     } catch (err) {
       logToParent({
