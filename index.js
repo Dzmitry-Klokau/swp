@@ -43,26 +43,29 @@ window.addEventListener(
   (event) => {
     const data = event.data;
 
-    if (typeof data !== "object") {
-      return;
-    }
-    if (data.type !== "setSrc") {
-      return;
-    }
-    if (typeof data.url !== "string") {
-      return;
-    }
-    const frame = document.getElementById("swpFrame");
-    const src = `https://dzmitry-klokau.github.io/swp?url=${
-      data.url
-    }&randomValue=${Math.floor(Math.random() * 1001)}`;
-    frame.src = src;
-    frame.style.display = "block";
+    if (data.type === "setSrc" && typeof data.url === "string") {
+      const frame = document.getElementById("swpFrame");
+      const src = `https://dzmitry-klokau.github.io/swp?url=${
+        data.url
+      }&randomValue=${Math.floor(Math.random() * 1001)}`;
+      frame.src = src;
+      frame.style.display = "block";
 
-    logToParent({
-      msg: `New iframe url is ${src}`,
-      level: "debug",
-    });
+      logToParent({
+        msg: `New iframe url is ${src}`,
+        level: "debug",
+      });
+    }
+
+    if (
+      data.type === "swp-content-cookie" &&
+      typeof data.payload === "string"
+    ) {
+      logToParent({
+        msg: `swp-content-cookie ${data.payload}`,
+        level: "debug",
+      });
+    }
   },
   false
 );
