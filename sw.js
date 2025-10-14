@@ -33,7 +33,7 @@ self.addEventListener("fetch", (event) => {
   if (url) {
     event.respondWith(handleProxyRequest(url));
   } else {
-    logMessage(`Without url ${url}`, "debug");
+    logMessage(`Without url ${JSON.stringify(reqUrl)}`, "debug");
   }
 });
 
