@@ -32,6 +32,8 @@ self.addEventListener("fetch", (event) => {
   const url = reqUrl.searchParams.get("url");
   if (url) {
     event.respondWith(handleProxyRequest(url));
+  } else {
+    logMessage(`Without url ${url}`, "debug");
   }
 });
 
