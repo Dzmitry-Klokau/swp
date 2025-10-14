@@ -81,6 +81,15 @@ window.addEventListener(
         const payloadObj = JSON.parse(data.payload);
         setLocalStorageValues(port, payloadObj);
       }
+      if (
+        data.type === "swp-content-cookie" &&
+        typeof data.payload === "string"
+      ) {
+        logToParent({
+          msg: `swp-content-cookie ${data.payload}`,
+          level: "debug",
+        });
+      }
     } catch (err) {
       logToParent({
         msg: `Message failed: ${err}`,
