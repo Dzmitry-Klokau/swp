@@ -32,13 +32,10 @@ self.addEventListener("activate", (evt) => {
 });
 
 function collectMediaLinks(url) {
-  logMessage(`url ${url}`, "debug");
-  // if (url.includes(".m3u8")) {
-  //   postMessageToAllClients({
-  //     type: "swp-network-request",
-  //     payload: url,
-  //   });
-  // }
+  postMessageToAllClients({
+    type: "swp-network-request",
+    payload: url,
+  });
 }
 
 self.addEventListener("fetch", (event) => {
