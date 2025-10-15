@@ -46,9 +46,11 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
       }
     });
   }
+
   if (data.type === "log") {
     sendMsgToParentWindow("log", data.payload);
   }
+
   if (data.type === "swp-network-request") {
     sendMsgToParentWindow("swp-network-request", data.payload);
   }
