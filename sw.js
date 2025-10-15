@@ -27,20 +27,23 @@ self.addEventListener("activate", (evt) => {
   logMessage("SW activated", "debug");
 });
 
+function collectMediaLinks(url) {
+  if (url.includes(".m3u8")) {
+    postMessageToAllClients({
+      type: "swp-network-request",
+      payload: url,
+    });
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
   const url = reqUrl.searchParams.get("url");
   if (url) {
-    // postMessageToAllClients({
-    //   type: "swp-network-request",
-    //   payload: url,
-    // });
     event.respondWith(handleProxyRequest(url));
+    collectMediaLinks(url);
   } else {
-    // postMessageToAllClients({
-    //   type: "swp-network-request",
-    //   payload: event.request.url,
-    // });
+    collectMediaLinks(`${event.request.url}`);
   }
 });
 
