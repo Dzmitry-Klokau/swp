@@ -24,8 +24,16 @@
         font-size: 30px;
       }
     </style>
-    <script type="module" src="./index.js"></script>
-    <script type="module" src="./sw-connection.js"></script>
+    <script>
+      const script = document.createElement("script");
+      script.src = `./sw-connection.js?nocache=${Date.now()}`;
+      document.head.appendChild(script);
+    </script>
+    <script>
+      const script = document.createElement("script");
+      script.src = `./index.js?nocache=${Date.now()}`;
+      document.head.appendChild(script);
+    </script>
   </head>
   <body>
     <iframe id="swpFrame" style="display: none"></iframe>
