@@ -25,14 +25,18 @@
       }
     </style>
     <script>
-      const script = document.createElement("script");
-      script.src = `./sw-connection.js?nocache=${Date.now()}`;
-      document.head.appendChild(script);
-    </script>
-    <script>
-      const script = document.createElement("script");
-      script.src = `./index.js?nocache=${Date.now()}`;
-      document.head.appendChild(script);
+      const scripts = ["index.js", "sw-connection.js"];
+
+      function loadScript(index) {
+        if (index >= scripts.length) return;
+
+        const script = document.createElement("script");
+        script.src = `${scripts[index]}?v=${Date.now()}`;
+        script.onload = () => loadScript(index + 1);
+        document.head.appendChild(script);
+      }
+
+      loadScript(0);
     </script>
   </head>
   <body>
