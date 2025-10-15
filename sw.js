@@ -3,7 +3,11 @@ function postMessageToAllClients(msgObj, options) {
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((clients) => {
       for (const client of clients) {
-        client.postMessage(msgObj, options);
+        try {
+          client.postMessage(msgObj, options);
+        } catch (err) {
+          // ignored
+        }
       }
     });
 }
