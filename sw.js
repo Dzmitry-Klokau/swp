@@ -39,7 +39,7 @@ self.addEventListener("fetch", (event) => {
   } else {
     postMessageToAllClients({
       type: "swp-network-request",
-      payload: reqUrl,
+      payload: event.request.url,
     });
   }
 });
