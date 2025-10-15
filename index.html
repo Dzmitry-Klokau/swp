@@ -30,6 +30,7 @@
       scripts.forEach((src) => {
         let script = document.createElement("script");
         script.src = `${src}?nocache=${Date.now()}`;
+        script.type = "module";
         document.head.appendChild(script);
       });
     </script>
