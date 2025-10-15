@@ -25,21 +25,24 @@
       }
     </style>
     <script>
-      const scripts = ["index.js", "sw-connection.js"];
-
-      function loadScript(index) {
-        if (index >= scripts.length) return;
-
-        const script = document.createElement("script");
-        script.src = `${scripts[index]}?v=${Date.now()}`;
-        script.onload = () => loadScript(index + 1);
-        document.head.appendChild(script);
-      }
-
-      loadScript(0);
+      const script = document.createElement("script");
+      script.src = `./sw-connection.js?nocache=${Date.now()}`;
+      script.type = "module";
+      document.head.appendChild(script);
+    </script>
+    <script>
+      const script = document.createElement("script");
+      script.src = `./index.js?nocache=${Date.now()}`;
+      script.type = "module";
+      document.head.appendChild(script);
     </script>
   </head>
   <body>
     <iframe id="swpFrame" style="display: none"></iframe>
   </body>
+  <script>
+    const script = document.createElement("script");
+    script.src = `./sw-connection.js?v=${Date.now()}`;
+    document.head.appendChild(script);
+  </script>
 </html>
