@@ -3,11 +3,7 @@ function postMessageToAllClients(msgObj, options) {
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((clients) => {
       for (const client of clients) {
-        try {
-          client.postMessage(msgObj, options);
-        } catch (err) {
-          // ignored
-        }
+        client.postMessage(msgObj, options);
       }
     });
 }
@@ -43,7 +39,6 @@ self.addEventListener("fetch", (event) => {
   const url = reqUrl.searchParams.get("url");
   if (url) {
     event.respondWith(handleProxyRequest(url));
-    collectMediaLinks(url);
   } else {
     collectMediaLinks(`${event.request.url}`);
   }

@@ -15,10 +15,6 @@ function setIFrameSrc(port, url) {
   frame.style.display = "block";
   frame.onload = function () {
     setTimeout(() => {
-      logToParent({
-        msg: "frame onload!",
-        level: "debug",
-      });
       port.postMessage("frame-onload");
     }, 100);
   };
