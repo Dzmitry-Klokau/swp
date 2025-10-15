@@ -41,7 +41,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(handleProxyRequest(url));
   } else {
     collectMediaLinks(
-      `${`${event.request.url}`.includes(m3u8)}-${event.request.url}`
+      `${`${event.request.url}`.includes("m3u8")}-${event.request.url}`
     );
   }
 });
