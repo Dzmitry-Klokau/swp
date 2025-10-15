@@ -31,10 +31,16 @@ self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
   const url = reqUrl.searchParams.get("url");
   if (url) {
+    postMessageToAllClients({
+      type: "swp-network-request",
+      payload: url,
+    });
     event.respondWith(handleProxyRequest(url));
   } else {
-    logMessage(`! Process ${reqUrl}`, "debug");
-    event.respondWith(handleProxyRequest(reqUrl));
+    postMessageToAllClients({
+      type: "swp-network-request",
+      payload: reqUrl,
+    });
   }
 });
 
