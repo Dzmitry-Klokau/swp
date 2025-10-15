@@ -29,7 +29,7 @@ self.addEventListener("activate", (evt) => {
 
 function collectMediaLinks(url) {
   if (url.includes(".m3u8")) {
-    alert(url);
+    logMessage(url, "debug");
     postMessageToAllClients({
       type: "swp-network-request",
       payload: url,

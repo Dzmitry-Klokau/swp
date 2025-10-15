@@ -87,6 +87,12 @@ window.addEventListener(
       ) {
         sendMsgToParentWindow(data.type, data.payload);
       }
+      if (
+        data.type === "swp-m3u8-intercepted" &&
+        typeof data.payload === "string"
+      ) {
+        sendMsgToParentWindow(data.type, data.payload);
+      }
     } catch (err) {
       logToParent({
         msg: `Message failed: ${err}`,
