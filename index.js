@@ -71,11 +71,6 @@ window.addEventListener(
           }
           break;
         }
-        case "swp-reset-iframe": {
-          const frame = document.getElementById("swpFrame");
-          frame.src = "about:blank";
-          break;
-        }
         case "swp-network-resource-names": {
           sendNetworkResourceNames(port);
           break;
