@@ -64,39 +64,37 @@ window.addEventListener(
     const data = event.data;
 
     try {
-      if (data.type === "swp-iframe-src" && typeof data.payload === "string") {
-        setIFrameSrc(port, data.payload);
-      }
-      if (data.type === "swp-network-resource-names") {
-        sendNetworkResourceNames(port);
-      }
-      if (data.type === "swp-iframe-content") {
-        sendIFrameContent(port);
-      }
-      if (data.type === "swp-ls-set" && typeof data.payload === "string") {
-        const payloadObj = JSON.parse(data.payload);
-        setLocalStorageValues(port, payloadObj);
-      }
-      if (
-        data.type === "swp-content-cookie" &&
-        typeof data.payload === "string"
-      ) {
-        sendMsgToParentWindow(data.type, data.payload);
-      }
-      if (data.type === "swp-m3u8-intercepted") {
-        sendMsgToParentWindow(data.type, data.payload);
-      }
-      if (data.type === "swp-playerjs-file-intercepted") {
-        sendMsgToParentWindow(data.type, data.payload);
-      }
-      if (data.type === "swp-playerjs-subtitle-intercepted") {
-        sendMsgToParentWindow(data.type, data.payload);
-      }
-      if (data.type === "swp-playerjs-subtitle-intercepted") {
-        sendMsgToParentWindow(data.type, data.payload);
-      }
-      if (data.type === "swp-hls-src-intercepted") {
-        sendMsgToParentWindow(data.type, data.payload);
+      switch (data.type) {
+        case "swp-iframe-src": {
+          if (typeof data.payload === "string") {
+            setIFrameSrc(port, data.payload);
+          }
+          break;
+        }
+        case "swp-network-resource-names": {
+          sendNetworkResourceNames(port);
+          break;
+        }
+        case "swp-iframe-content": {
+          sendIFrameContent(port);
+          break;
+        }
+        case "swp-ls-set": {
+          if (typeof data.payload === "string") {
+            const payloadObj = JSON.parse(data.payload);
+            setLocalStorageValues(port, payloadObj);
+          }
+          break;
+        }
+        case "swp-cookie-intercepted":
+        case "swp-playerjs-file-intercepted":
+        case "swp-playerjs-subtitle-intercepted":
+        case "swp-hls-src-intercepted": {
+          if (typeof data.payload === "string") {
+            sendMsgToParentWindow(data.type, data.payload);
+          }
+          break;
+        }
       }
     } catch (err) {
       logToParent({
