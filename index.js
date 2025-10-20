@@ -86,6 +86,18 @@ window.addEventListener(
       if (data.type === "swp-m3u8-intercepted") {
         sendMsgToParentWindow(data.type, data.payload);
       }
+      if (data.type === "swp-playerjs-file-intercepted") {
+        sendMsgToParentWindow(data.type, data.payload);
+      }
+      if (data.type === "swp-playerjs-subtitle-intercepted") {
+        sendMsgToParentWindow(data.type, data.payload);
+      }
+      if (data.type === "swp-playerjs-subtitle-intercepted") {
+        sendMsgToParentWindow(data.type, data.payload);
+      }
+      if (data.type === "swp-hls-src-intercepted") {
+        sendMsgToParentWindow(data.type, data.payload);
+      }
     } catch (err) {
       logToParent({
         msg: `Message failed: ${err}`,

@@ -27,22 +27,13 @@ self.addEventListener("activate", (evt) => {
   logMessage("SW activated", "debug");
 });
 
-function collectMediaLinks(url) {
-  postMessageToAllClients({
-    type: "swp-network-request",
-    payload: url,
-  });
-}
-
 self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
   const url = reqUrl.searchParams.get("url");
   if (url) {
     event.respondWith(handleProxyRequest(url));
   } else {
-    collectMediaLinks(
-      `${`${event.request.url}`.includes("m3u8")}-${event.request.url}`
-    );
+    logMessage(`${event.request.url}`, "debug");
   }
 });
 
