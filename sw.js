@@ -1,3 +1,5 @@
+import { addDelayFunction, addHumanClickFunction } from "./html-replacements";
+
 function postMessageToAllClients(msgObj, options) {
   self.clients
     .matchAll({ type: "window", includeUncontrolled: true })
@@ -48,13 +50,10 @@ async function handleProxyRequest(url) {
 
         let rBody = body;
 
-        if (headers) {
-          console.log("header", headers);
-          const contentType = headers["content-type"] || "";
-          if (contentType.includes("text/html")) {
-            rBody = addDelayFunction(rBody);
-            rBody = addHumanClickFunction(rBody);
-          }
+        const contentType = headers["content-type"] || "";
+        if (contentType.includes("text/html")) {
+          rBody = addDelayFunction(rBody);
+          rBody = addHumanClickFunction(rBody);
         }
 
         resolve(new Response(rBody, { status, headers }));
