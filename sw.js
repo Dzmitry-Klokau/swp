@@ -137,6 +137,28 @@ function addHumanClickFunction(body) {
       
           element.dispatchEvent(createMouseEvent('click', centerX, centerY));
       }
+
+      window.addEventListener(
+        "message",
+        (event) => {
+          const port = event.ports && event.ports[0];
+          const data = event.data;
+          
+          if(data.type === "swp-human-like-xpath-click") {
+            let result = document.evaluate(
+              data.payload,
+              document,
+              null,
+              XPathResult.FIRST_ORDERED_NODE_TYPE,
+              null
+            );
+            let element = result.singleNodeValue;
+            humanLikeClick(element);
+          }
+        },
+        false
+      );
+      
       </script>
       `
   );

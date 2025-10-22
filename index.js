@@ -96,15 +96,8 @@ window.addEventListener(
           break;
         }
         case "swp-human-like-xpath-click": {
-          let result = document.evaluate(
-            data.payload,
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-          );
-          let element = result.singleNodeValue;
-          humanLikeClick(element);
+          const iframe = document.getElementById("swpFrame");
+          iframe.contentWindow.postMessage(data);
           break;
         }
       }
