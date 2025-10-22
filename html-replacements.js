@@ -36,7 +36,7 @@ export function addHumanClickFunction(body) {
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
       
-          const randomOffset = () => (Math.random() - 0.5) * 10; // ±5 пикселей
+          const randomOffset = () => (Math.random() - 0.5) * 10;
       
           const path = [
               [centerX - 100, centerY - 50],

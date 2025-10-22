@@ -48,10 +48,13 @@ async function handleProxyRequest(url) {
 
         let rBody = body;
 
-        const contentType = headers.get("content-type") || "";
-        if (contentType.includes("text/html")) {
-          rBody = addDelayFunction(rBody);
-          rBody = addHumanClickFunction(rBody);
+        if (headers) {
+          console.log("header", headers);
+          const contentType = headers["content-type"] || "";
+          if (contentType.includes("text/html")) {
+            rBody = addDelayFunction(rBody);
+            rBody = addHumanClickFunction(rBody);
+          }
         }
 
         resolve(new Response(rBody, { status, headers }));
