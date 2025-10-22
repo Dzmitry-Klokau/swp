@@ -143,7 +143,7 @@ function addHumanClickFunction(body) {
         (event) => {
           const port = event.ports && event.ports[0];
           const data = event.data;
-          
+
           if(data.type === "swp-human-like-xpath-click") {
             let result = document.evaluate(
               data.payload,
@@ -153,6 +153,7 @@ function addHumanClickFunction(body) {
               null
             );
             let element = result.singleNodeValue;
+            console.log('element', element);
             humanLikeClick(element);
           }
         },
