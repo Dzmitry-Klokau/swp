@@ -94,48 +94,49 @@ function addHumanClickFunction(body) {
     `<head>
       <script>
       function createMouseEvent(type, x, y) {
-          return new MouseEvent(type, {
-              view: window,
-              bubbles: true,
-              cancelable: true,
-              clientX: x,
-              clientY: y,
-              button: 0
-          });
+        return new MouseEvent(type, {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+            clientX: x,
+            clientY: y,
+            button: 0
+        });
       }
       
       async function humanLikeClick(element) {
-          const rect = element.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-      
-          const randomOffset = () => (Math.random() - 0.5) * 10;
-      
-          const path = [
-              [centerX - 100, centerY - 50],
-              [centerX - 50, centerY - 20],
-              [centerX + randomOffset(), centerY + randomOffset()],
-              [centerX, centerY],
-          ];
-      
-          for (let [x, y] of path) {
-              element.dispatchEvent(createMouseEvent('mousemove', x, y));
-              await delay(100 + Math.random() * 100);
-          }
-      
-          element.dispatchEvent(createMouseEvent('mouseover', centerX, centerY));
-          await delay(100 + Math.random() * 100);
-      
-          element.dispatchEvent(createMouseEvent('mousemove', centerX, centerY));
-          await delay(100 + Math.random() * 100);
-      
-          element.dispatchEvent(createMouseEvent('mousedown', centerX, centerY));
-          await delay(120 + Math.random() * 100);
-      
-          element.dispatchEvent(createMouseEvent('mouseup', centerX, centerY));
-          await delay(80 + Math.random() * 80);
-      
-          element.dispatchEvent(createMouseEvent('click', centerX, centerY));
+        console.log(\`Human like click on the element: \${element}\`);
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+    
+        const randomOffset = () => (Math.random() - 0.5) * 10;
+    
+        const path = [
+            [centerX - 100, centerY - 50],
+            [centerX - 50, centerY - 20],
+            [centerX + randomOffset(), centerY + randomOffset()],
+            [centerX, centerY],
+        ];
+    
+        for (let [x, y] of path) {
+            element.dispatchEvent(createMouseEvent('mousemove', x, y));
+            await delay(100 + Math.random() * 100);
+        }
+    
+        element.dispatchEvent(createMouseEvent('mouseover', centerX, centerY));
+        await delay(100 + Math.random() * 100);
+    
+        element.dispatchEvent(createMouseEvent('mousemove', centerX, centerY));
+        await delay(100 + Math.random() * 100);
+    
+        element.dispatchEvent(createMouseEvent('mousedown', centerX, centerY));
+        await delay(120 + Math.random() * 100);
+    
+        element.dispatchEvent(createMouseEvent('mouseup', centerX, centerY));
+        await delay(80 + Math.random() * 80);
+    
+        element.dispatchEvent(createMouseEvent('click', centerX, centerY));
       }
 
       window.addEventListener(
@@ -145,6 +146,7 @@ function addHumanClickFunction(body) {
           const data = event.data;
 
           if(data.type === "swp-human-like-xpath-click") {
+            console.log(\`Try to find element by xpath: \${data.payload}\`)
             let result = document.evaluate(
               data.payload,
               document,
@@ -153,13 +155,13 @@ function addHumanClickFunction(body) {
               null
             );
             let element = result.singleNodeValue;
-            console.log('element', element);
-            humanLikeClick(element);
+            if(element){
+              humanLikeClick(element);
+            }
           }
         },
         false
       );
-      
       </script>
       `
   );
