@@ -95,6 +95,18 @@ window.addEventListener(
           }
           break;
         }
+        case "swp-human-like-click": {
+          let result = document.evaluate(
+            xpath,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+          );
+          let element = result.singleNodeValue;
+          humanLikeClick(element);
+          break;
+        }
       }
     } catch (err) {
       logToParent({

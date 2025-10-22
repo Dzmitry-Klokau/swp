@@ -45,7 +45,16 @@ async function handleProxyRequest(url) {
     const responsePromise = new Promise((resolve) => {
       messageChannel.port1.onmessage = (event) => {
         const { body, status, headers } = event.data;
-        resolve(new Response(body, { status, headers }));
+
+        let rBody = body;
+
+        const contentType = headers.get("content-type") || "";
+        if (contentType.includes("text/html")) {
+          rBody = addDelayFunction(rBody);
+          rBody = addHumanClickFunction(rBody);
+        }
+
+        resolve(new Response(rBody, { status, headers }));
       };
     });
 
