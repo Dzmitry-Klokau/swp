@@ -93,10 +93,6 @@ function addHumanClickFunction(body) {
     "<head>",
     `<head>
       <script>
-      function delay(ms) {
-          return new Promise(resolve => setTimeout(resolve, ms));
-      }
-      
       function createMouseEvent(type, x, y) {
           return new MouseEvent(type, {
               view: window,

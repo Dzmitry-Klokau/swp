@@ -95,9 +95,9 @@ window.addEventListener(
           }
           break;
         }
-        case "swp-human-like-click": {
+        case "swp-human-like-xpath-click": {
           let result = document.evaluate(
-            xpath,
+            data.payload,
             document,
             null,
             XPathResult.FIRST_ORDERED_NODE_TYPE,
