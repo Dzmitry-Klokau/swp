@@ -42,6 +42,7 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
 
     window.addEventListener("message", function handler(e) {
       if (e.data.type === "swp-response" && e.data.url === url) {
+        console.log("!2", JSON.stringify(e));
         port.postMessage(e.data.response);
         window.removeEventListener("message", handler);
       }
