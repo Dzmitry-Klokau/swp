@@ -7,7 +7,7 @@ function postMessageToAllClients(msgObj, options) {
           client.postMessage({
             type: "log",
             payload: {
-              msg: `many clients ${client.url}`,
+              msg: `many clients ${client.url} ${client.frameType} ${client.id}`,
               level: "debug",
             },
           });
