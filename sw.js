@@ -3,7 +3,15 @@ function postMessageToAllClients(msgObj, options) {
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((clients) => {
       if (clients.length > 1) {
-        alert("many client");
+        for (const client of clients) {
+          client.postMessage({
+            type: "log",
+            payload: {
+              msg: `many clients ${client.url}`,
+              level: "debug",
+            },
+          });
+        }
       }
       for (const client of clients) {
         client.postMessage(msgObj, options);
