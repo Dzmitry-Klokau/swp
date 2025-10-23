@@ -35,9 +35,9 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
   const data = event.data;
 
   if (data.type === "swp-request") {
-    const url = data.url;
+    const url = data.payload.url;
 
-    sendMsgToParentWindow("swp-request", url);
+    sendMsgToParentWindow("swp-request", data.payload);
 
     window.addEventListener("message", function handler(e) {
       if (e.data.type === "swp-response" && e.data.url === url) {

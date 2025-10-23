@@ -29,17 +29,18 @@ self.addEventListener("activate", (evt) => {
 
 self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
+  const method = event.request.method;
   const url = reqUrl.searchParams.get("url");
   if (url) {
-    event.respondWith(handleProxyRequest(url));
+    event.respondWith(handleProxyRequest(url, method));
   } else {
     logMessage(`${event.request.url}`, "debug");
   }
 });
 
-async function handleProxyRequest(url) {
+async function handleProxyRequest(url, method) {
   try {
-    logMessage(`Process ${url}`, "debug");
+    logMessage(`Process ${method} ${url}`, "debug");
     const messageChannel = new MessageChannel();
 
     const responsePromise = new Promise((resolve) => {
@@ -53,7 +54,10 @@ async function handleProxyRequest(url) {
     postMessageToAllClients(
       {
         type: "swp-request",
-        url,
+        payload: {
+          url,
+          method,
+        },
       },
       [messageChannel.port2]
     );
