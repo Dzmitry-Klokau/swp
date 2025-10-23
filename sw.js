@@ -2,6 +2,9 @@ function postMessageToAllClients(msgObj, options) {
   self.clients
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((clients) => {
+      if (clients.length > 1) {
+        alert("many client");
+      }
       for (const client of clients) {
         client.postMessage(msgObj, options);
       }
