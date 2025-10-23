@@ -1,4 +1,5 @@
 export function sendMsgToParentWindow(type, payload) {
+  console.log(JSON.stringify(payload));
   window.parent.postMessage(
     {
       type,

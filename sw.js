@@ -5,9 +5,6 @@ function postMessageToAllClients(msgObj, options) {
       for (const client of clients) {
         client.postMessage(msgObj, options);
       }
-      if (clients.length === 0) {
-        alert("no clients");
-      }
     });
 }
 
