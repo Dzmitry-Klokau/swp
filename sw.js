@@ -1,25 +1,24 @@
-function postMessageToAllClients(msgObj, options) {
-  self.clients
+function postMessageToAllClients(msgObj, createChannel = false) {
+  return self.clients
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((clients) => {
-      if (clients.length > 1) {
-        for (let i = 0; i < clients.length; i += 1) {
-          clients[i].postMessage({
-            type: "log",
-            payload: {
-              msg: `many clients ${i} ${client.url} ${client.frameType} ${client.id}`,
-              level: "debug",
-            },
-          });
+      const results = [];
+
+      for (const client of clients) {
+        if (createChannel) {
+          const channel = new MessageChannel();
+          results.push({ client, channel });
+          client.postMessage(msgObj, [channel.port2]);
+        } else {
+          client.postMessage(msgObj);
         }
       }
-      for (const client of clients) {
-        client.postMessage(msgObj, options);
-      }
+
+      return results;
     });
 }
 
-function logMessage(msg, level) {
+function logMessage(msg, level = "debug") {
   postMessageToAllClients({
     type: "log",
     payload: {
@@ -52,28 +51,35 @@ self.addEventListener("fetch", (event) => {
 async function handleProxyRequest(url, method) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
-    const messageChannel = new MessageChannel();
 
-    const responsePromise = new Promise((resolve) => {
-      messageChannel.port1.onmessage = (event) => {
-        const { body, status, headers } = event.data;
+    const msg = {
+      type: "swp-request",
+      payload: { url, method },
+    };
 
-        resolve(new Response(body, { status, headers }));
-      };
+    const clientChannels = await postMessageToAllClients(msg, true);
+
+    if (clientChannels.length === 0) {
+      throw new Error("Нет клиентов для обработки запроса");
+    }
+
+    const promises = clientChannels.map(({ channel }) => {
+      return new Promise((resolve) => {
+        channel.port1.onmessage = (event) => {
+          const { body, status, headers } = event.data;
+          resolve(new Response(body, { status, headers }));
+        };
+      });
     });
 
-    postMessageToAllClients(
-      {
-        type: "swp-request",
-        payload: {
-          url,
-          method,
-        },
-      },
-      [messageChannel.port2]
-    );
+    const response = await Promise.any(promises);
 
-    return await responsePromise;
+    clientChannels.forEach(({ channel }) => {
+      channel.port1.close();
+      channel.port2.close();
+    });
+
+    return response;
   } catch (err) {
     logMessage(`Error: ${err?.message}`, "error");
     return new Response("Internal error", { status: 500 });
