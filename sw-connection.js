@@ -35,6 +35,7 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
   const data = event.data;
 
   if (data.type === "swp-request") {
+    console.log("!", JSON.stringify(data));
     const url = data.payload.url;
 
     sendMsgToParentWindow("swp-request", data.payload);
