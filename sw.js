@@ -59,7 +59,7 @@ async function handleProxyRequest(url, method, headersObj) {
       payload: {
         url,
         method,
-        headers: JSON.stringify(headersObj, null, 2),
+        headers: JSON.stringify(headersObj),
       },
     };
 
