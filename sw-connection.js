@@ -56,4 +56,23 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
   if (data.type === "swp-network-request") {
     sendMsgToParentWindow("swp-network-request", data.payload);
   }
+
+  if (type === "GET_COOKIES") {
+    const allCookies = document.cookie;
+    port.postMessage({ cookies: allCookies });
+    return;
+  }
+
+  if (type === "SET_COOKIES" && cookies) {
+    console.log("🔸 New cookies:", cookies);
+    document.cookie = parseSetCookies(cookies);
+    return;
+  }
 });
+
+function parseSetCookies(setCookieHeader) {
+  return setCookieHeader
+    .split(/,(?=[^;]+=[^;]+)/)
+    .map((c) => c.split(";")[0])
+    .join("; ");
+}

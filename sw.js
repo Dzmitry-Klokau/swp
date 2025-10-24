@@ -39,18 +39,20 @@ self.addEventListener("activate", (evt) => {
 
 self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
-  const method = event.request.method;
-  const headersObj = Object.fromEntries(event.request.headers.entries());
 
   const url = reqUrl.searchParams.get("url");
   if (url) {
-    event.respondWith(handleProxyRequest(url, method, headersObj));
+    event.respondWith(handleProxyRequest(url, event));
   } else {
     logMessage(`${event.request.url}`, "debug");
   }
 });
 
-async function handleProxyRequest(url, method, headersObj) {
+async function handleProxyRequest(url, event) {
+  const method = event.request.method;
+  const headersObj = Object.fromEntries(event.request.headers.entries());
+  const cookieHeader = await getClientCookies(event);
+
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
@@ -59,7 +61,10 @@ async function handleProxyRequest(url, method, headersObj) {
       payload: {
         url,
         method,
-        headers: JSON.stringify(headersObj),
+        headers: JSON.stringify({
+          ...headersObj,
+          ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+        }),
       },
     };
 
@@ -90,4 +95,15 @@ async function handleProxyRequest(url, method, headersObj) {
     logMessage(`Error: ${err?.message}`, "error");
     return new Response("Internal error", { status: 500 });
   }
+}
+
+async function getClientCookies(event) {
+  const client = await self.clients.get(event.clientId);
+  if (!client) return null;
+
+  return new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = (msg) => resolve(msg.data.cookies || null);
+    client.postMessage({ type: "GET_COOKIES" }, [channel.port2]);
+  });
 }
