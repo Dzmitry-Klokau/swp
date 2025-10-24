@@ -58,7 +58,7 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
 
   if (data.type === "swp-get-cookie") {
     const allCookies = document.cookie;
-    console.log("allCookies", allCookies);
+    console.log("allCookies", { allCookies });
     port.postMessage({ cookies: allCookies });
     return;
   }

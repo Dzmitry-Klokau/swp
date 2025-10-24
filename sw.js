@@ -95,12 +95,10 @@ async function handleProxyRequest(url, event) {
       },
     };
 
-    postMessageToAllClients(msg, (resolve) => (event) => {
+    return postMessageToAllClients(msg, (resolve) => (event) => {
       const { body, status, headers } = event.data;
       resolve(new Response(body, { status, headers }));
     });
-
-    return postMessageToAllClients(msg, true);
   } catch (err) {
     logMessage(`Error: ${err?.message}`, "error");
     return new Response("Internal error", { status: 500 });
