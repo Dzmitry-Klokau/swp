@@ -73,12 +73,6 @@ self.addEventListener("fetch", (event) => {
 async function handleProxyRequest(url, event) {
   const method = event.request.method;
   const headersObj = Object.fromEntries(event.request.headers.entries());
-  const cookieHeader = await postMessageToAllClients(
-    { type: "swp-get-cookie" },
-    (resolve) => (event) => {
-      resolve(event.data.cookies);
-    }
-  );
 
   try {
     logMessage(`Process ${method} ${url}`, "debug");
@@ -88,10 +82,7 @@ async function handleProxyRequest(url, event) {
       payload: {
         url,
         method,
-        headers: JSON.stringify({
-          ...headersObj,
-          ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-        }),
+        headers: JSON.stringify(headersObj),
       },
     };
 
