@@ -56,7 +56,7 @@ async function handleProxyRequest(url, method, headers) {
 
     const msg = {
       type: "swp-request",
-      payload: { url, method, headers },
+      payload: { url, method, headers: JSON.stringify(headers) },
     };
 
     const clientChannels = await postMessageToAllClients(msg, true);
