@@ -50,13 +50,13 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-async function handleProxyRequest(url, method, _headers) {
+async function handleProxyRequest(url, method, headers) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
     const msg = {
       type: "swp-request",
-      payload: { url, method, headers: "{}" },
+      payload: { url, method, headers: JSON.stringify(headers) },
     };
 
     const clientChannels = await postMessageToAllClients(msg, true);
