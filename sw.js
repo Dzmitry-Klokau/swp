@@ -19,7 +19,7 @@ function postMessage(msgObj, createChannel = false) {
 }
 
 async function postMessageToAllClients(msgObj, onMessageHandler) {
-  const clientChannels = await postMessage(msg, true);
+  const clientChannels = await postMessage(msgObj, true);
   if (clientChannels.length === 0) {
     throw new Error("No clients");
   }
