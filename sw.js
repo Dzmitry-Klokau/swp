@@ -71,7 +71,7 @@ async function handleProxyRequest(url, event) {
     const clientChannels = await postMessageToAllClients(msg, true);
 
     if (clientChannels.length === 0) {
-      throw new Error("Нет клиентов для обработки запроса");
+      throw new Error("No client channels");
     }
 
     const promises = clientChannels.map(({ channel }) => {
@@ -99,7 +99,12 @@ async function handleProxyRequest(url, event) {
 
 async function getClientCookies(event) {
   const client = await self.clients.get(event.clientId);
-  if (!client) return null;
+  if (!client) {
+    logMessage(`no client with id: ${event.clientId}`, "error");
+    return null;
+  }
+
+  logMessage(`send cookie request to client`, "debug");
 
   return new Promise((resolve) => {
     const channel = new MessageChannel();
