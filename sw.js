@@ -50,7 +50,7 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-async function handleProxyRequest(url, method) {
+async function handleProxyRequest(url, method, headers) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
