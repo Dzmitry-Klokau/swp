@@ -56,21 +56,21 @@ navigator.serviceWorker.addEventListener("message", async (event) => {
     sendMsgToParentWindow("swp-network-request", data.payload);
   }
 
-  if (data.type === "GET_COOKIES") {
+  if (data.type === "swp-get-cookie") {
     const allCookies = document.cookie;
     console.log("allCookies", allCookies);
     port.postMessage({ cookies: allCookies });
     return;
   }
 
-  if (data.type === "SET_COOKIES") {
-    // console.log("🔸 New cookies:", cookies);
-    // document.cookie = setCookieHeader
-    //   .split(/,(?=[^;]+=[^;]+)/)
-    //   .map((c) => c.split(";")[0])
-    //   .join("; ");
-    return;
-  }
+  // if (data.type === "SET_COOKIES") {
+  //   // console.log("🔸 New cookies:", cookies);
+  //   // document.cookie = setCookieHeader
+  //   //   .split(/,(?=[^;]+=[^;]+)/)
+  //   //   .map((c) => c.split(";")[0])
+  //   //   .join("; ");
+  //   return;
+  // }
 });
 
 function parseSetCookies(setCookieHeader) {

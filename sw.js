@@ -1,4 +1,4 @@
-function postMessageToAllClients(msgObj, createChannel = false) {
+function postMessage(msgObj, createChannel = false) {
   return self.clients
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((clients) => {
@@ -18,8 +18,30 @@ function postMessageToAllClients(msgObj, createChannel = false) {
     });
 }
 
+async function postMessageToAllClients(msgObj, onMessageHandler) {
+  const clientChannels = await postMessage(msg, true);
+  if (clientChannels.length === 0) {
+    throw new Error("No clients");
+  }
+
+  const promises = clientChannels.map(({ channel }) => {
+    return new Promise((resolve) => {
+      channel.port1.onmessage = onMessageHandler(resolve);
+    });
+  });
+
+  const response = await Promise.any(promises);
+
+  clientChannels.forEach(({ channel }) => {
+    channel.port1.close();
+    channel.port2.close();
+  });
+
+  return response;
+}
+
 function logMessage(msg, level = "debug") {
-  postMessageToAllClients({
+  postMessage({
     type: "log",
     payload: {
       msg: `[sw] ${msg}`,
@@ -51,7 +73,12 @@ self.addEventListener("fetch", (event) => {
 async function handleProxyRequest(url, event) {
   const method = event.request.method;
   const headersObj = Object.fromEntries(event.request.headers.entries());
-  const cookieHeader = await getClientCookies(event);
+  const cookieHeader = await postMessageToAllClients(
+    { type: "swp-get-cookie" },
+    (resolve) => (event) => {
+      resolve(event.data.cookies);
+    }
+  );
 
   try {
     logMessage(`Process ${method} ${url}`, "debug");
@@ -68,47 +95,14 @@ async function handleProxyRequest(url, event) {
       },
     };
 
-    const clientChannels = await postMessageToAllClients(msg, true);
-
-    if (clientChannels.length === 0) {
-      throw new Error("No client channels");
-    }
-
-    const promises = clientChannels.map(({ channel }) => {
-      return new Promise((resolve) => {
-        channel.port1.onmessage = (event) => {
-          const { body, status, headers } = event.data;
-          resolve(new Response(body, { status, headers }));
-        };
-      });
+    postMessageToAllClients(msg, (resolve) => (event) => {
+      const { body, status, headers } = event.data;
+      resolve(new Response(body, { status, headers }));
     });
 
-    const response = await Promise.any(promises);
-
-    clientChannels.forEach(({ channel }) => {
-      channel.port1.close();
-      channel.port2.close();
-    });
-
-    return response;
+    return postMessageToAllClients(msg, true);
   } catch (err) {
     logMessage(`Error: ${err?.message}`, "error");
     return new Response("Internal error", { status: 500 });
   }
-}
-
-async function getClientCookies(event) {
-  const client = await self.clients.get(event.clientId);
-  if (!client) {
-    logMessage(`no client with id: ${event.clientId}`, "error");
-    return null;
-  }
-
-  logMessage(`send cookie request to client`, "debug");
-
-  return new Promise((resolve) => {
-    const channel = new MessageChannel();
-    channel.port1.onmessage = (msg) => resolve(msg.data.cookies || null);
-    client.postMessage({ type: "GET_COOKIES" }, [channel.port2]);
-  });
 }
