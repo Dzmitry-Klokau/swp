@@ -40,21 +40,20 @@ self.addEventListener("activate", (evt) => {
 self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
   const method = event.request.method;
-  const headers = event.request.headers;
+  const headersObj = Object.fromEntries(event.request.headers.entries());
 
   const url = reqUrl.searchParams.get("url");
   if (url) {
-    event.respondWith(handleProxyRequest(url, method, headers));
+    event.respondWith(handleProxyRequest(url, method, headersObj));
   } else {
     logMessage(`${event.request.url}`, "debug");
   }
 });
 
-async function handleProxyRequest(url, method, headers) {
+async function handleProxyRequest(url, method, headersObj) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
-    const headersObj = Object.fromEntries(event.request.headers.entries());
     const msg = {
       type: "swp-request",
       payload: {
