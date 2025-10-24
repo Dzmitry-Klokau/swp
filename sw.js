@@ -40,9 +40,11 @@ self.addEventListener("activate", (evt) => {
 self.addEventListener("fetch", (event) => {
   const reqUrl = new URL(event.request.url);
   const method = event.request.method;
+  const headers = event.request.headers;
+
   const url = reqUrl.searchParams.get("url");
   if (url) {
-    event.respondWith(handleProxyRequest(url, method));
+    event.respondWith(handleProxyRequest(url, method, headers));
   } else {
     logMessage(`${event.request.url}`, "debug");
   }
@@ -54,7 +56,7 @@ async function handleProxyRequest(url, method) {
 
     const msg = {
       type: "swp-request",
-      payload: { url, method },
+      payload: { url, method, headers },
     };
 
     const clientChannels = await postMessageToAllClients(msg, true);
