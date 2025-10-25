@@ -77,7 +77,7 @@ async function handleProxyRequest(url, event) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
-    let body = null;
+    let body = "";
 
     if (event.request.method !== "GET" && event.request.method !== "HEAD") {
       body = await event.request.text();
