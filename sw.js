@@ -77,12 +77,19 @@ async function handleProxyRequest(url, event) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
+    let body = null;
+
+    if (event.request.method !== "GET" && event.request.method !== "HEAD") {
+      body = await event.request.text();
+    }
+
     const msg = {
       type: "swp-request",
       payload: {
         url,
         method,
         headers: JSON.stringify(headersObj),
+        body,
       },
     };
 
