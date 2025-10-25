@@ -77,10 +77,10 @@ async function handleProxyRequest(url, event) {
   try {
     logMessage(`Process ${method} ${url}`, "debug");
 
-    let body = "";
+    let bodyText = "";
 
     if (event.request.method !== "GET" && event.request.method !== "HEAD") {
-      body = await event.request.text();
+      bodyText = await event.request.text();
     }
 
     const msg = {
@@ -89,7 +89,7 @@ async function handleProxyRequest(url, event) {
         url,
         method,
         headers: JSON.stringify(headersObj),
-        body,
+        bodyText,
       },
     };
 
