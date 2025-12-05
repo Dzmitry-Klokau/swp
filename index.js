@@ -89,6 +89,7 @@ window.addEventListener(
         case "swp-cookie-intercepted":
         case "swp-playerjs-file-intercepted":
         case "swp-playerjs-subtitle-intercepted":
+        case "swp-venom-player-intercepted":
         case "swp-hls-src-intercepted": {
           if (typeof data.payload === "string") {
             sendMsgToParentWindow(data.type, data.payload);
