@@ -64,6 +64,7 @@ window.addEventListener(
     const data = event.data;
 
     try {
+      console.log(`3223 ${data.type}`);
       switch (data.type) {
         case "swp-iframe-src": {
           if (typeof data.payload === "string") {
