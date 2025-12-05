@@ -97,7 +97,7 @@ window.addEventListener(
           break;
         }
         case "swp-human-like-xpath-click":
-        case "swp-scroll-down-1000": {
+        case "swp-scroll-down": {
           const iframe = document.getElementById("swpFrame");
           iframe.contentWindow.postMessage(data);
           break;
